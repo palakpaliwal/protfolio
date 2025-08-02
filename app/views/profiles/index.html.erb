@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="csrf-token" content="<%= form_authenticity_token %>">
   <title>Palak Paliwal - Professional Profile</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
     :root {
       --primary-color: #3498db;
@@ -15,45 +16,119 @@
       --dark-text: #2c3e50;
       --light-text: #ecf0f1;
     }
-    
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: var(--dark-text);
       line-height: 1.6;
     }
-    
+
     .profile-header {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: white;
       padding: 3rem 0;
       margin-bottom: 2rem;
       border-radius: 0 0 20px 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    
+
     .profile-pic {
       width: 150px;
       height: 150px;
       border-radius: 50%;
       border: 5px solid white;
       object-fit: cover;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
+    .profile-pic-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .upload-overlay {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      background-color: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      border: 3px solid white;
+    }
+
+    .upload-overlay:hover {
+      background-color: var(--secondary-color);
+      transform: scale(1.1);
+    }
+
+    .upload-overlay.loading {
+      background-color: #6c757d;
+      cursor: not-allowed;
+      animation: pulse 1.5s infinite;
+    }
+
+    .upload-overlay i {
+      color: white;
+      font-size: 18px;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .upload-input {
+      display: none;
+    }
+
+    .upload-status {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .upload-status.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .upload-status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .upload-status.loading {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
     .section-card {
       background: white;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
       padding: 2rem;
       margin-bottom: 2rem;
       transition: transform 0.3s ease;
     }
-    
+
     .section-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
-    
+
     .section-title {
       color: var(--primary-color);
       border-bottom: 2px solid var(--light-bg);
@@ -62,12 +137,12 @@
       display: flex;
       align-items: center;
     }
-    
+
     .section-title i {
       margin-right: 10px;
       font-size: 1.5rem;
     }
-    
+
     .skill-badge {
       background-color: var(--light-bg);
       color: var(--dark-text);
@@ -77,18 +152,18 @@
       display: inline-block;
       font-size: 0.9rem;
     }
-    
+
     .skill-badge.primary {
       background-color: var(--primary-color);
       color: white;
     }
-    
+
     .timeline-item {
       position: relative;
       padding-left: 30px;
       margin-bottom: 2rem;
     }
-    
+
     .timeline-item:before {
       content: '';
       position: absolute;
@@ -99,7 +174,7 @@
       border-radius: 50%;
       background-color: var(--primary-color);
     }
-    
+
     .timeline-item:after {
       content: '';
       position: absolute;
@@ -109,27 +184,27 @@
       height: calc(100% - 20px);
       background-color: #ddd;
     }
-    
+
     .timeline-item:last-child:after {
       display: none;
     }
-    
+
     .social-links a {
-      color: var(--dark-text);
+      color: var(--light-text);
       font-size: 1.5rem;
       margin-right: 15px;
       transition: color 0.3s;
     }
-    
+
     .social-links a:hover {
-      color: var(--primary-color);
+      color: #f1f1f1;
     }
-    
+
     @media (max-width: 768px) {
       .profile-header {
         text-align: center;
       }
-      
+
       .profile-pic {
         margin-bottom: 1rem;
       }
@@ -141,16 +216,23 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-md-2 text-center text-md-start">
-        <img src= "/assets/download.jpeg", class="profile-pic" %>
-      </div>
+          <div class="profile-pic-container">
+            <img id="profilePic" src="<%= @profile_avatar_url %>" class="profile-pic mb-2" alt="Palak Paliwal">
+            <div class="upload-overlay" onclick="document.getElementById('imageUpload').click()">
+              <i class="fas fa-plus"></i>
+            </div>
+            <input type="file" id="imageUpload" accept="image/*" class="upload-input">
+          </div>
+          <div id="uploadStatus" class="upload-status"></div>
+        </div>
         <div class="col-md-10">
           <h1>Palak Paliwal</h1>
           <p class="lead">Software Engineer</p>
-          <p>Passionate full-stack developer with 2+ years of experience building scalable web applications. Specialized in Ruby on Rails JavaScript frameworks.</p>
+          <p>Passionate full-stack developer with 2+ years of experience building scalable web applications. Specialized in Ruby on Rails and JavaScript frameworks.</p>
           <div class="social-links">
-            <a href="https://www.linkedin.com/in/kuldeep-lovanshi-6556041aa/" target="_blank"><i class="fab fa-linkedin"></i></a>
-            <a href="https://github.com/lovanshikuldeep" target="_blank"><i class="fab fa-github"></i></a>
-            <a href="mailto:kuldeeplovanshi777@gmail.com"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.linkedin.com/in/palak-paliwal-636b1b207/" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/palakpaliwal/" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="mailto:palakpaliwal@gmail.com"><i class="fas fa-envelope"></i></a>
           </div>
         </div>
       </div>
@@ -162,85 +244,91 @@
       <div class="col-lg-8">
         <!-- Work Experience Section -->
         <div class="section-card">
-          <h2 class="section-title">
-            <i class="fas fa-briefcase"></i> Work Experience
-          </h2>
-          
+          <h2 class="section-title"><i class="fas fa-briefcase"></i> Work Experience</h2>
           <div class="timeline-item">
             <h3>Software Engineer</h3>
-            <h4>BestPeers Infosystem Private Limited — CMMI Level-3.</h4>
-            <p class="text-muted">
-              Apirl 2023 - Present | <i class="fas fa-map-marker-alt"></i> Indore, MP
-            </p>
-            <p>Worked as a full stack developer, I’ve contributed to building and maintaining scalable, client-facing web applications and internal tools using a service-oriented architecture..</p>
+            <h4>BestPeers Infosystem Private Limited — CMMI Level-3</h4>
+            <p class="text-muted">April 2023 - Present | <i class="fas fa-map-marker-alt"></i> Indore, MP</p>
+            <p>Worked as a full stack developer, contributing to building and maintaining scalable, client-facing web applications and internal tools using a service-oriented architecture.</p>
             <div>
               <span class="skill-badge">Ruby on Rails</span>
               <span class="skill-badge">React</span>
-              <span class="skill-badge">Next.js</span>
-              <span class="skill-badge">Heroku</span>
-              <span class="skill-badge">Docker</span>
-              <span class="skill-badge">Twilio</span>
+              <span class="skill-badge">Angular</span>
+              <span class="skill-badge">AWS</span>
+              <span class="skill-badge">MySQL</span>
               <span class="skill-badge">Postgres</span>
-
             </div>
           </div>
-          
+
           <div class="timeline-item">
             <h3>Internship</h3>
-            <h4> Demmo</h4>
-            <p class="text-muted">
-              January 2022 - July 2022 | <i class="fas fa-map-marker-alt"></i> Remote.
-            </p>
-            <p>Worked as a java intern</p>
+            <h4>Demmo</h4>
+            <p class="text-muted">January 2022 - July 2022 | <i class="fas fa-map-marker-alt"></i> Remote</p>
+            <p>Worked as a Java intern.</p>
             <div>
               <span class="skill-badge">Java</span>
-              <span class="skill-badge">MySql</span>
+              <span class="skill-badge">MySQL</span>
             </div>
           </div>
         </div>
-        
-        <!-- Education Section -->
+
+        <!-- Projects Section -->
         <div class="section-card">
-          <h2 class="section-title">
-            <i class="fas fa-graduation-cap"></i> Education
-          </h2>
+          <h2 class="section-title"><i class="fas fa-project-diagram"></i> Projects</h2>
           
           <div class="timeline-item">
-            <h3>MCA(computer science)</h3>
-            <h4>Acropolis Institute Of Technology And Research.</h4>
-            <p class="text-muted">
-              2021 - 2023 | <i class="fas fa-map-marker-alt"></i> Indore, MP
-            </p>
+            <h4>RocketShipIt Integration for Multi-Carrier Shipping</h4>
+            <p>Integrated RocketShipIt with UPS, FedEx, and Stamps APIs to dynamically generate labels, fetch rates, and track shipments. Developed fallback handling, rate normalization, and credential rotation for scalable performance.</p>
+            <div>
+              <span class="skill-badge">Ruby on Rails</span>
+              <span class="skill-badge">REST APIs</span>
+              <span class="skill-badge">UPS/FedEx</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <h4>Real-time Import Tracker with WebSockets</h4>
+            <p>Implemented a real-time import tracker using ActionCable and React Native. Enabled periodic API updates with live UI progress bars for enhanced import feedback.</p>
+            <div>
+              <span class="skill-badge">Rails</span>
+              <span class="skill-badge">React Native</span>
+              <span class="skill-badge">WebSocket</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <h4>Custom Print Job Management</h4>
+            <p>Created a system to associate printers and job sizes with workstations instead of users. Enabled dynamic configuration for streamlined print workflows.</p>
+            <div>
+              <span class="skill-badge">Rails</span>
+              <span class="skill-badge">PostgreSQL</span>
+              <span class="skill-badge">Service Architecture</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Education Section -->
+        <div class="section-card">
+          <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Education</h2>
+          <div class="timeline-item">
+            <h3>MCA (Computer Science)</h3>
+            <h4>Acropolis Institute Of Technology And Research</h4>
+            <p class="text-muted">2021 - 2023 | <i class="fas fa-map-marker-alt"></i> Indore, MP</p>
             <p><strong>CGPA:</strong> 7.5</p>
           </div>
-          
-          <%# <div class="timeline-item">
-            <h3>Higher Secondary </h3>
-            <h4>University of California, Berkeley</h4>
-            <p class="text-muted">
-              2010 - 2014 | <i class="fas fa-map-marker-alt"></i> Berkeley, CA
-            </p>
-            <p><strong>GPA:</strong> 3.6/4.0</p>
-          </div> %>
         </div>
       </div>
-      
+
       <div class="col-lg-4">
         <!-- Skills Section -->
         <div class="section-card">
-          <h2 class="section-title">
-            <i class="fas fa-code"></i> Technical Skills
-          </h2>
-          
-          
+          <h2 class="section-title"><i class="fas fa-code"></i> Technical Skills</h2>
           <div class="mb-3">
             <span class="skill-badge primary">Ruby On Rails</span>
             <span class="skill-badge primary">React</span>
-            <span class="skill-badge primary">Next js</span>
+            <span class="skill-badge primary">Next.js</span>
             <span class="skill-badge">Twilio</span>
           </div>
-          
-          
           <h5>DevOps & Cloud</h5>
           <div class="mb-3">
             <span class="skill-badge">Heroku</span>
@@ -249,74 +337,46 @@
             <span class="skill-badge">CI/CD</span>
           </div>
         </div>
-        
+
         <!-- Languages Section -->
         <div class="section-card">
-          <h2 class="section-title">
-            <i class="fas fa-language"></i> Languages
-          </h2>
-          
+          <h2 class="section-title"><i class="fas fa-language"></i> Languages</h2>
           <div class="mb-2">
             <strong>Hindi</strong>
             <div class="progress mt-1">
-              <div class="progress-bar" role="progressbar" style="width: 100%;" 
-                   aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                Native
-              </div>
+              <div class="progress-bar" role="progressbar" style="width: 100%;">Native</div>
             </div>
           </div>
-          
           <div class="mb-2">
             <strong>English</strong>
             <div class="progress mt-1">
-              <div class="progress-bar" role="progressbar" style="width: 80%;" 
-                   aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
-                Fluent
-              </div>
+              <div class="progress-bar" role="progressbar" style="width: 80%;">Fluent</div>
             </div>
           </div>
         </div>
-        
+
         <!-- Certifications Section -->
         <div class="section-card">
-          <h2 class="section-title">
-            <i class="fas fa-certificate"></i> Certifications
-          </h2>
-          
+          <h2 class="section-title"><i class="fas fa-certificate"></i> Certifications</h2>
           <ul class="list-unstyled">
-            <%# <li class="mb-2">
-              <strong>MCate</strong>
-              <div class="text-muted small">
-               mcate platform| June 2021
-              </div>
-            </li> %>
             <li class="mb-2">
-              <strong>Training from Innovation pvt. limited</strong>
-              <div class="text-muted small">
-                java | March 2022
-              </div>
+              <strong>Training from Innovation Pvt. Ltd.</strong>
+              <div class="text-muted small">Java | March 2022</div>
             </li>
           </ul>
         </div>
-        
+
         <!-- Contact Section -->
         <div class="section-card">
-          <h2 class="section-title">
-            <i class="fas fa-envelope"></i> Contact
-          </h2>
-          
+          <h2 class="section-title"><i class="fas fa-envelope"></i> Contact</h2>
           <ul class="list-unstyled">
             <li class="mb-2">
               <i class="fas fa-envelope me-2"></i>
               <a href="mailto:palakpaliwal@gmail.com">palakpaliwal@gmail.com</a>
             </li>
             <li class="mb-2">
-              <i class="fas fa-phone me-2"></i>
-              +
-            </li>
-            <li class="mb-2">
               <i class="fas fa-map-marker-alt me-2"></i>
-              Ganesh Dham colony, Indore, MP
+              Sai Kripa Colony, Indore, MP
             </li>
           </ul>
         </div>
@@ -326,9 +386,104 @@
 
   <footer class="bg-light py-4 mt-4">
     <div class="container text-center">
-      <p class="text-muted mb-0">&copy; 2025 kuldeep lovanshi. All rights reserved.</p>
+      <p class="text-muted mb-0">&copy; 2025 Palak Paliwal. All rights reserved.</p>
     </div>
   </footer>
+
+  <script>
+    const imageInput = document.getElementById("imageUpload");
+    const profilePic = document.getElementById("profilePic");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const uploadOverlay = document.querySelector(".upload-overlay");
+
+    function showStatus(message, type) {
+      uploadStatus.textContent = message;
+      uploadStatus.className = `upload-status ${type}`;
+      uploadStatus.style.display = 'block';
+
+      if (type !== 'loading') {
+        setTimeout(() => {
+          uploadStatus.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    function setLoadingState(isLoading) {
+      if (isLoading) {
+        uploadOverlay.classList.add('loading');
+        uploadOverlay.onclick = null; // Disable clicking during upload
+      } else {
+        uploadOverlay.classList.remove('loading');
+        uploadOverlay.onclick = () => imageInput.click(); // Re-enable clicking
+      }
+    }
+
+    function getCsrfToken() {
+      const metaTag = document.querySelector('meta[name="csrf-token"]');
+      return metaTag ? metaTag.getAttribute('content') : '';
+    }
+
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        showStatus("Please upload a valid image file.", "error");
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showStatus("File size must be less than 5MB.", "error");
+        return;
+      }
+
+      // Show preview immediately
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        profilePic.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to server
+      setLoadingState(true);
+      showStatus("Uploading image...", "loading");
+
+      const formData = new FormData();
+      formData.append('profile[avatar]', file);
+
+      fetch('/profiles/upload_avatar', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': getCsrfToken(),
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setLoadingState(false);
+        if (data.success) {
+          showStatus("Image uploaded successfully!", "success");
+          if (data.avatar_url) {
+            profilePic.src = data.avatar_url;
+          }
+        } else {
+          showStatus(data.error || "Upload failed. Please try again.", "error");
+        }
+      })
+      .catch(error => {
+        setLoadingState(false);
+        console.error('Upload error:', error);
+        showStatus("Upload failed. Please try again.", "error");
+      });
+    });
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
